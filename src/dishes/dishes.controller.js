@@ -77,9 +77,9 @@ function imageUrlPropertyisValid(req, res, next) {
 }
 
 function create(req, res) {
-    const { data: { name , description, price, image_url } = {} } = req.body;
+    const { data: { name, description, price, image_url } = {} } = req.body;
     const newDish = {
-        id: ++lastDishId,
+        id: nextId(),
         name,
         description,
         price,
