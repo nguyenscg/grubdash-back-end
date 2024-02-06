@@ -1,5 +1,6 @@
-const router = require("express").Router();
+const router = require("express").Router(); // create new instance of Express router
+const controller = require("./dishes.controller"); // import dishes controller
 
-// TODO: Implement the /dishes routes needed to make the tests pass
+router.route("/").get(controller.list); // use route handler for get requests
 
 module.exports = router;
