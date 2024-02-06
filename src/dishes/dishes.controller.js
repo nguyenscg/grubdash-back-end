@@ -141,10 +141,7 @@ module.exports = {
         bodyDataHas("description"), 
         bodyDataHas("price"), 
         bodyDataHas("image_url"),
-        namePropertyIsValid,
-        descriptionPropertyIsValid,
         pricePropertyIsValid, 
-        imageUrlPropertyisValid,
         create
     ],
     list,
