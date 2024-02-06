@@ -29,6 +29,19 @@ function read(req, res, next) {
     res.json({ data: res.locals.order });
 };
 
+
+function create(req, res, next) {
+    orders.push(res.locals.newOrder);
+    res.status(201).json({ data: res.locals.newOrder });
+}
+
+function update(req, res, next) {
+    const orderId = req.params.orderId;
+    const ogOrder = res.locals.order;
+
+    const { data: { id, mobileNumber, status, dishes } } = req.body;
+}
+
 function destroy(req, res, next) {
     const orderId = req.params.orderId;
     const foundOrder = orders.find((order) => order.id === Number(orderId));
@@ -48,5 +61,7 @@ function destroy(req, res, next) {
 module.exports = {
     list,
     read: [orderExists, read],
+    create: [create],
+    update: [update],
     delete: [orderExists, destroy],
 }
