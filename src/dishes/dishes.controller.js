@@ -140,4 +140,12 @@ module.exports = {
     ],
     list,
     read: [dishExists, read],
+    update: [
+        dishExists, 
+        bodyDataHas("name"), 
+        bodyDataHas("description"), 
+        bodyDataHas("price"), 
+        bodyDataHas("image_url"), 
+        update
+    ],
 };
