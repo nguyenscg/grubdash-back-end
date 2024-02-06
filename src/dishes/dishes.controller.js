@@ -28,6 +28,31 @@ function bodyDataHas(propertyName) {
     };
 }
 
+// name validation
+// name || name property is missing, name property is empty "" -> Error message: Dish must include a name
+function namePropertyIsValid(req, res, next) {
+    const { data: { name } = {} } = req.body;
+}
+
+// description validation
+// description || description property is missing, description property is empty "" -> Error message: Dish must include a description
+function descriptionPropertyIsValid(req, res, next) {
+    const { data: { description } = {} } = req.body;
+}
+
+// price validation
+// price property is missing, price property 0 or less, price property is not an integer -> Error message: Dish must include a price, Dish must have a price that is an integer greater than 0, Dish must have a price that is an integer greater than 0
+function pricePropertyIsValid(req, res, next) {
+    const { data: { price } = {} } = req.body;
+
+}
+
+// image_url validation
+// image_url property is missing, image_url property is empty "" -> Error message: Dish must include a image_url, Dish must include a image_url
+function imageUrlPropertyisValid(req, res, next) {
+    const { data: { image_url} = {} } = req.body;
+}
+
 function create(req, res) {
     const { data: { name , description, price, image_url } = {} } = req.body;
     const newDish = {
