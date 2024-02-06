@@ -32,25 +32,49 @@ function bodyDataHas(propertyName) {
 // name || name property is missing, name property is empty "" -> Error message: Dish must include a name
 function namePropertyIsValid(req, res, next) {
     const { data: { name } = {} } = req.body;
+    
+    if (!name) {
+        return res.status(400).json({ error: 'Dish must include a name'});
+    }
+    next();
 }
 
 // description validation
 // description || description property is missing, description property is empty "" -> Error message: Dish must include a description
 function descriptionPropertyIsValid(req, res, next) {
     const { data: { description } = {} } = req.body;
+
+    if (!description) {
+        return res.status(400).json({ error: 'Dish must include a description'});
+    }
 }
 
 // price validation
-// price property is missing, price property 0 or less, price property is not an integer -> Error message: Dish must include a price, Dish must have a price that is an integer greater than 0, Dish must have a price that is an integer greater than 0
+// price property is missing, price property 0 or less, price property is not an integer -> Error message: Dish must include a price,
 function pricePropertyIsValid(req, res, next) {
     const { data: { price } = {} } = req.body;
 
+    if (price <= 0 || !Number.isInteger(price)) {
+        return next({
+            status: 400,
+            message: `Dish must have a price that is an integer greater than 0`
+        });
+    }
+    next();
 }
 
 // image_url validation
 // image_url property is missing, image_url property is empty "" -> Error message: Dish must include a image_url, Dish must include a image_url
 function imageUrlPropertyisValid(req, res, next) {
     const { data: { image_url} = {} } = req.body;
+
+    if (!image_url) {
+        return next({
+            status: 400,
+            message: "Dish must include a image_url"
+        });
+    }
+    next();
 }
 
 function create(req, res) {
@@ -71,7 +95,11 @@ module.exports = {
         bodyDataHas("name"), 
         bodyDataHas("description"), 
         bodyDataHas("price"), 
-        bodyDataHas("image_url"), 
+        bodyDataHas("image_url"),
+        namePropertyIsValid,
+        descriptionPropertyIsValid,
+        pricePropertyIsValid, 
+        imageUrlPropertyisValid,
         create
     ],
     list,
