@@ -112,8 +112,18 @@ function update(req, res, next) {
     const foundDish = res.locals.dish;
     const { data: { id, name, description, price, image_url } = {} } = req.body;
 
-    if (id !== dishId) {
-        next({status: 400})
+    // check if dish with dishId exists
+    if (!foundDish) {
+        return next({
+            status: 404,
+            message: `Dish id not found: ${dishId}`
+        });
+    }
+    if (id && id !== Number(dishId)) {
+        return next({
+            status: 400,
+            message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
+        });
     }
 
     // update dish
