@@ -90,7 +90,7 @@ function create(req, res) {
     res.status(201).json({ data: newDish });
 }
 
-// read-dish handler
+// read-dish handler ---- GET /dishes/:dishId
 function dishExists(req, res, next) {
     const { dishId } = req.params;
     const foundDish = dishes.find((dish) => dish.id === Number(dishId));
@@ -108,6 +108,21 @@ function dishExists(req, res, next) {
 function read(req, res) {
     const { dishId } = req.params;
     const foundDish = dishes.find((dishes) => dish.id === Number(dishId));
+    res.json({ data: foundDish });
+}
+
+// update dish handler
+function update(req, res) {
+    const { dishId } = req.params;
+    const foundDish = dishes.find((dish) => dish.id === Number(dishId));
+    const { data: { name, description, price, image_url } = {} } = req.body;
+
+    // update dish
+    foundDish.name = name;
+    foundDish.description = description;
+    foundDish.price = price;
+    foundDish.image_url = image_url;
+
     res.json({ data: foundDish });
 }
 
