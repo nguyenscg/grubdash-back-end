@@ -14,6 +14,8 @@ function list(req, res) {
     res.json({ data: dishes });
 }
 
+let lastDishId = dishes.reduce((maxId, dish) => Math.max(maxId, dish.id), 0);
+
 // create-dish validation
 function bodyDataHas(propertyName) {
     return function(req, res, next) {
@@ -25,18 +27,17 @@ function bodyDataHas(propertyName) {
     };
 }
 
-// id validation
 function hasValidId(req, res, next) {
-    const { dishId } = req.params;
-    const { data: { id } = {} } = req.body; // if id exists, check for matching id
-     if (id && id !== dishId) {
-       next({
-         status: 400,
-         message: `Doesn't match id ${id}`
-       });
-     }
-    next();
-  }
+  const { dishId } = req.params;
+  const { data: { id } = {} } = req.body; // if id exists, check for matching id
+   if (id && id !== dishId) {
+     next({
+       status: 400,
+       message: `Doesn't match id ${id}`
+     });
+   }
+  next();
+}
 
 // name validation
 // name || name property is missing, name property is empty "" -> Error message: Dish must include a name
@@ -121,60 +122,18 @@ function read(req, res, next) {
 
 // update dish handler
 function update(req, res, next) {
-    const { dishId } = req.params;
-    const foundDish = res.locals.dish;
-    const { data: { id, name, description, price, image_url } = {} } = req.body;
-    
-    // dishExists
-    if (!foundDish) {
-      return next({
-        status: 404,
-        message: `Dish does not exist: ${dishId}`,
-      });
-    }
-    // had valid id
-      if (id !== Number(dishId)) {
-        return next({
-            status: 400,
-            message: `Dish id does not match route id. Dish: ${data.id}, Route: ${dishId}`,
-          });
-      }
-    // body has property "name"
-      if (!name) {
-        return next({
-          status: 400,
-          message: "Dish must include a name",
-        })
-      }
-    // body has property "description"
-      if (!description) {
-        return next({
-          status: 400,
-          message: "Dish must include a description",
-        })
-      }
-    // body has property price
-        if (price <= 0 || !Number.isInteger(price)) {
-          return next({
-              status: 400,
-              message: "Dish must have a price that is an integer greater than 0",
-          });
-        }
-        if (!image_url) {
-          return next({
-              status: 400,
-              message: "Dish must include a image_url",
-          });
-      }
-    
-      // update dish
-      foundDish.name = name;
-      foundDish.description = description;
-      foundDish.price = price;
-      foundDish.image_url = image_url;
+  const { dishId } = req.params;
+  const foundDish = res.locals.dish;
+  const { data: { id, name, description, price, image_url } = {} } = req.body;
   
-      res.json({ data: foundDish });
-  }
+    // update dish
+    foundDish.name = name;
+    foundDish.description = description;
+    foundDish.price = price;
+    foundDish.image_url = image_url;
+
+    res.json({ data: foundDish });
+}
 
 module.exports = {
     create: [
@@ -188,12 +147,13 @@ module.exports = {
     list,
     read: [dishExists, read],
     update: [
-        dishExists,
-        hasValidId, 
+        dishExists, 
+        hasValidId,
         bodyDataHas("name"), 
         bodyDataHas("description"), 
         bodyDataHas("price"), 
         bodyDataHas("image_url"), 
+        pricePropertyIsValid,
         update
     ],
 };
