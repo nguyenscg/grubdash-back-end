@@ -109,10 +109,14 @@ function read(req, res, next) {
 }
 
 // update dish handler
-function update(req, res) {
+function update(req, res, next) {
     const { dishId } = req.params;
-    const foundDish = dishes.find((dish) => dish.id === Number(dishId));
-    const { data: { name, description, price, image_url } = {} } = req.body;
+    const dish = res.locals.dish;
+    const { data: { id, name, description, price, image_url } = {} } = req.body;
+
+    if (id !== dishId) {
+        next({status: 400})
+    }
 
     // update dish
     foundDish.name = name;
@@ -120,7 +124,7 @@ function update(req, res) {
     foundDish.price = price;
     foundDish.image_url = image_url;
 
-    res.json({ data: foundDish });
+    res.json({ data: dish });
 }
 
 module.exports = {
