@@ -15,6 +15,22 @@ function list(req, res) {
     res.json({ data: dishes });
 }
 
+let lastDishId = dishes.reduce((maxId, dish) => Math.max(maxId, dish.id), 0);
+
+function create(req, res) {
+    const { data: { name , description, price, image_url } = {} } = req.body;
+    const newDish = {
+        id: ++lastDishId,
+        name,
+        description,
+        price,
+        image_url,
+    }
+    dishes.push(newDish);
+    res.status(201).json({ data: newDish });
+}
+
 module.exports = {
+    create: [create],
     list,
 };
