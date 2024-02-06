@@ -25,6 +25,19 @@ function bodyDataHas(propertyName) {
     };
 }
 
+// id validation
+function hasValidId(req, res, next) {
+    const { dishId } = req.params;
+    const { data: { id } = {} } = req.body; // if id exists, check for matching id
+     if (id && id !== dishId) {
+       next({
+         status: 400,
+         message: `Doesn't match id ${id}`
+       });
+     }
+    next();
+  }
+
 // name validation
 // name || name property is missing, name property is empty "" -> Error message: Dish must include a name
 function namePropertyIsValid(req, res, next) {
