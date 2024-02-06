@@ -93,8 +93,8 @@ function create(req, res) {
 function dishExists(req, res, next) {
     const { dishId } = req.params;
     const foundDish = dishes.find((dish) => dish.id === Number(dishId));
-
     if (foundDish) {
+        res.locals.dish = foundDish;
         return next();
     }
     next({
@@ -104,7 +104,7 @@ function dishExists(req, res, next) {
 }
 
 // read
-function read(req, res) {
+function read(req, res, next) {
     res.json({ data: res.locals.dish });
 }
 
