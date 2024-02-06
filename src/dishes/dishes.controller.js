@@ -6,7 +6,6 @@ const dishes = require(path.resolve("src/data/dishes-data"));
 // Use this function to assign ID's when necessary
 const nextId = require("../utils/nextId");
 
-// TODO: Implement the /dishes handlers needed to make the tests pass
 // dishes route
 // handlers and middleware functions to create, read, update, and list dishes. dishes cannot be deleted
 
@@ -20,11 +19,11 @@ let lastDishId = dishes.reduce((maxId, dish) => Math.max(maxId, dish.id), 0);
 // create-dish validation
 function bodyDataHas(propertyName) {
     return function(req, res, next) {
-        const { data: {} } = req.body;
+        const { data = {} } = req.body;
         if (data[propertyName]) {
             return next();
         }
-        next({ status: 400, message: `Must include a ${propertyName}` };)
+        next({ status: 400, message: `Must include a ${propertyName}` });
     };
 }
 
