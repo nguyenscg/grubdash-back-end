@@ -17,6 +17,17 @@ function list(req, res) {
 
 let lastDishId = dishes.reduce((maxId, dish) => Math.max(maxId, dish.id), 0);
 
+// create-dish validation
+function bodyDataHas(propertyName) {
+    return function(req, res, next) {
+        const { data: {} } = req.body;
+        if (data[propertyName]) {
+            return next();
+        }
+        next({ status: 400, message: `Must include a ${propertyName}` };)
+    };
+}
+
 function create(req, res) {
     const { data: { name , description, price, image_url } = {} } = req.body;
     const newDish = {
@@ -31,6 +42,12 @@ function create(req, res) {
 }
 
 module.exports = {
-    create: [create],
+    create: [
+        bodyDataHas("name"), 
+        bodyDataHas("description"), 
+        bodyDataHas("price"), 
+        bodyDataHas("image_url"), 
+        create
+    ],
     list,
 };
