@@ -14,8 +14,6 @@ function list(req, res) {
     res.json({ data: dishes });
 }
 
-let lastDishId = dishes.reduce((maxId, dish) => Math.max(maxId, dish.id), 0);
-
 // create-dish validation
 function bodyDataHas(propertyName) {
     return function(req, res, next) {
@@ -111,7 +109,7 @@ function read(req, res, next) {
 // update dish handler
 function update(req, res, next) {
     const { dishId } = req.params;
-    const dish = res.locals.dish;
+    const foundDish = res.locals.dish;
     const { data: { id, name, description, price, image_url } = {} } = req.body;
 
     if (id !== dishId) {
@@ -124,7 +122,7 @@ function update(req, res, next) {
     foundDish.price = price;
     foundDish.image_url = image_url;
 
-    res.json({ data: dish });
+    res.json({ data: foundDish });
 }
 
 module.exports = {

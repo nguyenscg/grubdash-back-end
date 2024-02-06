@@ -25,6 +25,20 @@ function orderExists(req, res, next) {
     });
 }
 
+function validateOrder(req, res, next) {
+    const { data: { deliverTo, mobileNumber, status, dishes } } = req.body;
+
+    if(!deliverTo || deliverTo =="") {
+        return next({ status: 400, message: "Order must include a deliverTo" })
+    }
+    if(!mobileNumber || mobileNumber == "") {
+        return next({ status: 400, message: "Order must include a mobile number"})
+    }
+    if(!dishes) {
+        return next({ status: 400, message: "Order must include a dish"})
+    }
+}
+
 function read(req, res, next) {
     res.json({ data: res.locals.order });
 };
@@ -39,7 +53,10 @@ function update(req, res, next) {
     const orderId = req.params.orderId;
     const ogOrder = res.locals.order;
 
-    const { data: { id, mobileNumber, status, dishes } } = req.body;
+    const { data: { id, deliverTo, mobileNumber, status, dishes } } = req.body;
+    if (id && id !== orderId) {
+        return next({ status: 400, mesage: "Order id does not match route id"})
+    }
 }
 
 function destroy(req, res, next) {
@@ -61,7 +78,7 @@ function destroy(req, res, next) {
 module.exports = {
     list,
     read: [orderExists, read],
-    create: [create],
-    update: [update],
+    create: [validateOrder, create],
+    update: [validateOrder, orderExists, update],
     delete: [orderExists, destroy],
 }
