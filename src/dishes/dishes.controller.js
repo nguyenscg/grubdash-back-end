@@ -111,29 +111,57 @@ function update(req, res, next) {
     const { dishId } = req.params;
     const foundDish = res.locals.dish;
     const { data: { id, name, description, price, image_url } = {} } = req.body;
-
-    // check if dish with dishId exists
+    
+    // dishExists
     if (!foundDish) {
-        return next({
-            status: 404,
-            message: `Dish id not found: ${dishId}`
-        });
+      return next({
+        status: 404,
+        message: `Dish does not exist: ${dishId}`,
+      });
     }
-    if (id && id !== Number(dishId)) {
+    // had valid id
+      if (id !== Number(dishId)) {
         return next({
             status: 400,
-            message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
-        });
-    }
-
-    // update dish
-    foundDish.name = name;
-    foundDish.description = description;
-    foundDish.price = price;
-    foundDish.image_url = image_url;
-
-    res.json({ data: foundDish });
-}
+            message: `Dish id does not match route id. Dish: ${data.id}, Route: ${dishId}`,
+          });
+      }
+    // body has property "name"
+      if (!name) {
+        return next({
+          status: 400,
+          message: "Dish must include a name",
+        })
+      }
+    // body has property "description"
+      if (!description) {
+        return next({
+          status: 400,
+          message: "Dish must include a description",
+        })
+      }
+    // body has property price
+        if (price <= 0 || !Number.isInteger(price)) {
+          return next({
+              status: 400,
+              message: "Dish must have a price that is an integer greater than 0",
+          });
+        }
+        if (!image_url) {
+          return next({
+              status: 400,
+              message: "Dish must include a image_url",
+          });
+      }
+    
+      // update dish
+      foundDish.name = name;
+      foundDish.description = description;
+      foundDish.price = price;
+      foundDish.image_url = image_url;
+  
+      res.json({ data: foundDish });
+  }
 
 module.exports = {
     create: [
