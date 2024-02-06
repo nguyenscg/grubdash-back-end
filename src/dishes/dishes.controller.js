@@ -105,9 +105,7 @@ function dishExists(req, res, next) {
 
 // read
 function read(req, res) {
-    const { dishId } = req.params;
-    const foundDish = dishes.find((dishes) => dish.id === Number(dishId));
-    res.json({ data: foundDish });
+    res.json({ data: res.locals.dish });
 }
 
 // update dish handler
