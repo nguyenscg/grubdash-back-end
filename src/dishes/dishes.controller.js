@@ -90,6 +90,27 @@ function create(req, res) {
     res.status(201).json({ data: newDish });
 }
 
+// read-dish handler
+function dishExists(req, res, next) {
+    const { dishId } = req.params;
+    const foundDish = dishes.find((dish) => dish.id === Number(dishId));
+
+    if (foundDish) {
+        return next();
+    }
+    next({
+        status: 404,
+        message: `Dish id not found: ${dishId}`,
+    });
+}
+
+// read
+function read(req, res) {
+    const { dishId } = req.params;
+    const foundDish = dishes.find((dishes) => dish.id === Number(dishId));
+    res.json({ data: foundDish });
+}
+
 module.exports = {
     create: [
         bodyDataHas("name"), 
@@ -103,4 +124,5 @@ module.exports = {
         create
     ],
     list,
+    read: [dishExists, read],
 };
