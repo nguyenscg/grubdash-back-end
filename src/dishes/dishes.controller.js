@@ -90,7 +90,7 @@ function create(req, res) {
 // read-dish handler ---- GET /dishes/:dishId
 function dishExists(req, res, next) {
     const { dishId } = req.params;
-    const foundDish = dishes.find((dish) => dish.id === Number(dishId));
+    const foundDish = dishes.find((dish) => dish.id == Number(dishId));
     if (foundDish) {
         res.locals.dish = foundDish;
         return next();
