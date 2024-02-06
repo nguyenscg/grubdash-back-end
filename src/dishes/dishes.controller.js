@@ -188,7 +188,8 @@ module.exports = {
     list,
     read: [dishExists, read],
     update: [
-        dishExists, 
+        dishExists,
+        hasValidId, 
         bodyDataHas("name"), 
         bodyDataHas("description"), 
         bodyDataHas("price"), 
