@@ -15,9 +15,9 @@ function orderExists(req, res, next) {
     const { orderId } = req.params;
     const foundOrder = orders.find((order) => order.id === Number(orderId));
     
-    if(foundOrder) {
-        res.locals.user = foundOrder;
-        return next();
+    if (foundOrder) {
+      res.locals.user = foundOrder;
+      next();
     }
     next({
         status: 404,
@@ -25,18 +25,14 @@ function orderExists(req, res, next) {
     });
 }
 
-function validateOrder(req, res, next) {
-    const { data: { deliverTo, mobileNumber, status, dishes } } = req.body;
-
-    if(!deliverTo || deliverTo =="") {
-        return next({ status: 400, message: "Order must include a deliverTo" })
-    }
-    if(!mobileNumber || mobileNumber == "") {
-        return next({ status: 400, message: "Order must include a mobile number"})
-    }
-    if(!dishes) {
-        return next({ status: 400, message: "Order must include a dish"})
-    }
+function bodyDataHas(propertyName) {
+    return function(req, res, next) {
+        const { data = {} } = req.body;
+        if (data[propertyName]) {
+            return next();
+        }
+        next({ status: 400, message: `Must include a ${propertyName}` });
+    };
 }
 
 function hasValidId(req, res, next) {
@@ -69,7 +65,7 @@ function hasValidQuantity(req, res, next) {
     if (!quantity) {
         return next({
             status: 400,
-            message: "Dish quantity must have a quantity that is an integer greater than 0"
+            message: `Dish ${quantity} must have a quantity that is an integer greater than 0`
         })
     }
     next();
@@ -117,7 +113,7 @@ function destroy(req, res, next) {
     if (res.locals.order.status !== "pending") {
         return next({
             status: 400,
-            message: `An order cannot be deleted unless it is pending` 
+            message: "An order cannot be deleted unless it is pending" 
         });
     }
 }
@@ -125,7 +121,17 @@ function destroy(req, res, next) {
 module.exports = {
     list,
     read: [orderExists, read],
-    create: [validateOrder, create],
-    update: [validateOrder, orderExists, update],
-    delete: [orderExists, destroy],
+    create: [
+      hasValidId, 
+      create
+    ],
+    update: [
+      hasValidId, 
+      orderExists, 
+      update
+    ],
+    delete: [
+      orderExists, 
+      destroy
+    ],
 }
