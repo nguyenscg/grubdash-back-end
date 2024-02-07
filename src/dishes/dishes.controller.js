@@ -153,7 +153,7 @@ module.exports = {
         bodyDataHas("description"), 
         bodyDataHas("price"), 
         bodyDataHas("image_url"), 
-        pricePropertyIsValid,
+        pricePropertyIsValid, 
         update
     ],
 };
