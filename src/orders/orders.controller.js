@@ -159,20 +159,11 @@ function update(req, res, next) {
   
 }
 
-function destroy(req, res, next) {
-    const orderId = req.params.orderId;
-    const foundOrder = orders.find((order) => order.id === Number(orderId));
-    if (foundOrder > -1) {
-        orders.splice(foundOrder, 1);
-        res.sendStatus(204);
-    }
-
-    if (res.locals.order.status !== "pending") {
-        return next({
-            status: 400,
-            message: "An order cannot be deleted unless it is pending" 
-        });
-    }
+function destroy(req, res, next){
+    const {orderId} = req.params;
+    const index = orders.findIndex((order) => order.id === orderId);
+    const deletedOrders = orders.splice(index,1);
+    res.sendStatus(204);
 }
 
 module.exports = {
