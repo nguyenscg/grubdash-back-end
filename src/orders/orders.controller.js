@@ -113,6 +113,16 @@ function hasMobileNumber(req, res, next) {
   next();
 }
 
+function deleteStatusPropertyIsValid(req, res, next) {
+    if(res.locals.order.status !== "pending") {
+        return next({
+            status: 400,
+            message: "An order cannot be deleted unless it is pending",
+        });
+    }
+    next();
+}
+
 
 function read(req, res, next) {
   res.json({ data: res.locals.order });
@@ -160,9 +170,9 @@ function update(req, res, next) {
 }
 
 function destroy(req, res, next){
-    const {orderId} = req.params;
+    const { orderId } = req.params;
     const index = orders.findIndex((order) => order.id === orderId);
-    const deletedOrders = orders.splice(index,1);
+    const deletedOrders = orders.splice(index, 1);
     res.sendStatus(204);
 }
 
@@ -190,7 +200,8 @@ module.exports = {
         update
       ],
     delete: [
-      orderExists, 
+      orderExists,
+      deleteStatusPropertyIsValid, 
       destroy
     ],
 }
