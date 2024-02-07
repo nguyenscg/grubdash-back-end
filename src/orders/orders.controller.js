@@ -87,37 +87,45 @@ function read(req, res, next) {
 }
 
 function create(req, res, next) {
-  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
-  const newOrder = {
-    id: nextId(),
-    deliverTo,
-    mobileNumber,
-    status,
-    dishes
-  };
-  orders.push(newOrder);
-  res.status(201).json({ data: newOrder });
-}
-
-function update(req, res, next) {
-    const orderId = req.params;
-    const order = res.locals.order;
-
-    const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } = req.body;
-    if (id && id !== orderId) {
-        return next({ 
-          status: 404, 
-          mesage: "Order id does not match route id"})
+    const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+    
+    if (!deliverTo) { // check if deliverTo is missing
+      return next({
+        status: 400,
+        message: "Order must include a deliverTo"
+      });
     }
-  // update order
-  order.deliverTo = deliverTo;
-  order.mobileNumber = mobileNumber;
-  order.status = status;
-  order.dishes = dishes;
+    const newOrder = {
+      id: nextId(),
+      deliverTo,
+      mobileNumber,
+      status,
+      dishes
+    };
+    orders.push(newOrder);
+    res.status(201).json({ data: newOrder });
+  }
   
-  res.json({ data: order });
+  function update(req, res, next) {
+      const orderId = req.params.orderId;
+      const order = res.locals.order;
   
-}
+      const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+      if (id && id !== orderId) {
+          return next({ 
+            status: 400, 
+            mesage: "Order id does not match route id"
+          });
+      }
+    // update order
+    order.deliverTo = deliverTo;
+    order.mobileNumber = mobileNumber;
+    order.status = status;
+    order.dishes = dishes;
+    
+    res.json({ data: order });
+    
+  }
 
 function destroy(req, res, next) {
     const orderId = req.params.orderId;
