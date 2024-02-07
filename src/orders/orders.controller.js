@@ -24,6 +24,7 @@ function orderExists(req, res, next) {
             message: `Order id not found: ${orderId}`,
         });
 }}
+
 function bodyDataHas(propertyName) {
     return function(req, res, next) {
         const { data = {} } = req.body;
@@ -188,20 +189,20 @@ module.exports = {
       create
     ],
     update: [ 
-        orderExists,
-        bodyDataHas("deliverTo"),
-        bodyDataHas("dishes"),
-        bodyDataHas("status"),
-        hasValidId,
-        isDishesValid,
-        hasValidQuantity,
-        hasValidStatus,
-        hasMobileNumber,
-        update
-      ],
+      orderExists,
+      bodyDataHas("deliverTo"),
+      bodyDataHas("dishes"),
+      bodyDataHas("status"),
+      hasValidId,
+      isDishesValid,
+      hasValidQuantity,
+      hasValidStatus,
+      hasMobileNumber,
+      update
+    ],
     delete: [
       orderExists,
-      deleteStatusPropertyIsValid, 
+      deleteStatusPropertyIsValid,
       destroy
     ],
 }
