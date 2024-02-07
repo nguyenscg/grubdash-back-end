@@ -13,18 +13,17 @@ function list(req, res) {
 
 function orderExists(req, res, next) {
     const { orderId } = req.params;
-    const foundOrder = orders.find((order) => order.id === Number(orderId));
-    
+    const foundOrder = orders.find((order) => order.id === (orderId));
+
     if (foundOrder) {
       res.locals.order = foundOrder;
       return next();
-    }
-    next({
-        status: 404,
-        message: `Order id not found: ${orderId}`,
-    });
-}
-
+    } else {
+        next({
+            status: 404,
+            message: `Order id not found: ${orderId}`,
+        });
+}}
 function bodyDataHas(propertyName) {
     return function(req, res, next) {
         const { data = {} } = req.body;
