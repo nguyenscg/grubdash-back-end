@@ -16,8 +16,8 @@ function orderExists(req, res, next) {
     const foundOrder = orders.find((order) => order.id === Number(orderId));
     
     if (foundOrder) {
-      res.locals.user = foundOrder;
-      next();
+      res.locals.order = foundOrder;
+      return next();
     }
     next({
         status: 404,
@@ -83,19 +83,7 @@ function hasValidStatus(req, res, next){
 }
 
 function read(req, res, next) {
-  const foundOrder = res.locals.order;
-  if(foundOrder) {
-    // create new order
-    const orderRecord = {
-      id: nextId(),
-      deliverTo,
-      mobileNumber,
-      status,
-      dishes
-    }
-  }
-  orders.push(orderRecord);
-  return res.json({ data: foundOrder });
+  res.json({ data: res.locals.order });
 }
 
 function create(req, res, next) {
@@ -112,15 +100,23 @@ function create(req, res, next) {
 }
 
 function update(req, res, next) {
-    const orderId = req.params.orderId;
-    const ogOrder = res.locals.order;
+    const orderId = req.params;
+    const order = res.locals.order;
 
-    const { data: { id, deliverTo, mobileNumber, status, dishes } } = req.body;
+    const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } = req.body;
     if (id && id !== orderId) {
         return next({ 
           status: 404, 
           mesage: "Order id does not match route id"})
     }
+  // update order
+  order.deliverTo = deliverTo;
+  order.mobileNumber = mobileNumber;
+  order.status = status;
+  order.dishes = dishes;
+  
+  res.json({ data: order });
+  
 }
 
 function destroy(req, res, next) {
@@ -143,12 +139,15 @@ module.exports = {
     list,
     read: [orderExists, read],
     create: [
+      isDishesValid,
       hasValidId, 
       create
     ],
-    update: [
-      hasValidId, 
+    update: [ 
       orderExists, 
+      hasValidId,
+      isDishesValid,
+      hasValidStatus,
       update
     ],
     delete: [
