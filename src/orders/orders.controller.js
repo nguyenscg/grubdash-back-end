@@ -180,13 +180,17 @@ module.exports = {
       create
     ],
     update: [ 
-      orderExists, 
-      hasValidId,
-      isDishesValid,
-      hasValidStatus,
-      hasMobileNumber,
-      update
-    ],
+        orderExists,
+        bodyDataHas("deliverTo"),
+        bodyDataHas("dishes"),
+        bodyDataHas("status"),
+        hasValidId,
+        isDishesValid,
+        hasValidQuantity,
+        hasValidStatus,
+        hasMobileNumber,
+        update
+      ],
     delete: [
       orderExists, 
       destroy
