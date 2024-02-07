@@ -59,15 +59,17 @@ function isDishesValid(req, res, next){
     next();
 }
 
-function hasValidQuantity(req, res, next) {
-    const { data: { quantity } = {} } = req.body;
-    
-    if (!quantity) {
-        return next({
-            status: 400,
-            message: `Dish ${quantity} must have a quantity that is an integer greater than 0`
-        })
-    }
+function hasValidQuantity(req,res,next){
+    const { data: { dishes } = {} } = req.body;
+    dishes.forEach((dish, index) => {
+        const quantity = dish.quantity;
+        if (!quantity || quantity < 1 || Number(quantity) !== quantity) {
+            next({
+                status: 400,
+                message: `Dish ${index} must have a quantity that is an integer greater than 0`,
+            });
+        }
+    });
     next();
 }
 
@@ -171,11 +173,12 @@ module.exports = {
     list,
     read: [orderExists, read],
     create: [
-      isDishesValid,
-      hasValidId,
-      hasMobileNumber,
-      create
-    ],
+        bodyDataHas("deliverTo"),
+        bodyDataHas("dishes"),
+        isDishesValid,
+        hasValidQuantity,
+        create
+      ],
     update: [ 
       orderExists, 
       hasValidId,
