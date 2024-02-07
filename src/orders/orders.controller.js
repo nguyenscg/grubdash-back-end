@@ -73,12 +73,19 @@ function hasValidQuantity(req,res,next){
 }
 
 function hasValidStatus(req, res, next){
-    const { data: { status } = {} } = req.body;
-    if (!status) {
+    const { data: { status } ={} } = req.body;
+    if(!status || (status !== "pending" && status !== "preparing" && status !== "out-for-delivery") ){
         return next({
             status: 400,
-            message: "Order must include a dish"
-        })
+            message: "Order must have a status of pending, preparing, out-for-delivery, delivered"
+
+        });
+    }
+    else if(status === "delivered"){
+        return next({
+            status: 400,
+            message: "A delivered order cannot be changed"
+        });
     }
     next();
 }
