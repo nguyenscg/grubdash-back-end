@@ -83,13 +83,32 @@ function hasValidStatus(req, res, next){
 }
 
 function read(req, res, next) {
-    res.json({ data: res.locals.order });
-};
-
+  const foundOrder = res.locals.order;
+  if(foundOrder) {
+    // create new order
+    const orderRecord = {
+      id: nextId(),
+      deliverTo,
+      mobileNumber,
+      status,
+      dishes
+    }
+  }
+  orders.push(orderRecord);
+  return res.json({ data: foundOrder });
+}
 
 function create(req, res, next) {
-    orders.push(res.locals.newOrder);
-    res.status(201).json({ data: res.locals.newOrder });
+  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+  const newOrder = {
+    id: nextId(),
+    deliverTo,
+    mobileNumber,
+    status,
+    dishes
+  };
+  orders.push(newOrder);
+  res.status(201).json({ data: newOrder });
 }
 
 function update(req, res, next) {
@@ -98,7 +117,9 @@ function update(req, res, next) {
 
     const { data: { id, deliverTo, mobileNumber, status, dishes } } = req.body;
     if (id && id !== orderId) {
-        return next({ status: 400, mesage: "Order id does not match route id"})
+        return next({ 
+          status: 404, 
+          mesage: "Order id does not match route id"})
     }
 }
 
