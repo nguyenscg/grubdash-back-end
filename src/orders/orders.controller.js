@@ -39,6 +39,53 @@ function validateOrder(req, res, next) {
     }
 }
 
+function hasValidId(req, res, next) {
+    const { orderId } = req.params;
+    const { data: { id } = {} } = req.body; // if id exists, check for matching id
+    if (id && id !== orderId) {
+      next({
+        status: 400,
+        message: `Doesn't match id ${id}`
+      });
+    }
+   next();
+}
+
+function isDishesValid(req, res, next){
+    const { data: { dishes } = {} } = req.body;
+    
+    if (!dishes) {
+        return next({
+            status: 400,
+            message: "Order must include a dish"
+        })
+    }
+    next();
+}
+
+function hasValidQuantity(req, res, next) {
+    const { data: { quantity } = {} } = req.body;
+    
+    if (!quantity) {
+        return next({
+            status: 400,
+            message: "Dish quantity must have a quantity that is an integer greater than 0"
+        })
+    }
+    next();
+}
+
+function hasValidStatus(req, res, next){
+    const { data: { status } = {} } = req.body;
+    if (!status) {
+        return next({
+            status: 400,
+            message: "Order must include a dish"
+        })
+    }
+    next();
+}
+
 function read(req, res, next) {
     res.json({ data: res.locals.order });
 };
