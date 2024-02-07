@@ -49,14 +49,14 @@ function hasValidId(req, res, next) {
 
 function isDishesValid(req, res, next){
     const { data: { dishes } = {} } = req.body;
-    
-    if (!dishes) {
-        return next({
-            status: 400,
-            message: "Order must include a dish"
-        })
+    if (dishes.length !== 0 && Array.isArray(dishes)) {
+      return next();
+    } else {
+      return next({
+        status: 400,
+        message: `Order must include at least one dish`,
+      });
     }
-    next();
 }
 
 function hasValidQuantity(req,res,next){
@@ -173,12 +173,13 @@ module.exports = {
     list,
     read: [orderExists, read],
     create: [
-        bodyDataHas("deliverTo"),
-        bodyDataHas("dishes"),
-        isDishesValid,
-        hasValidQuantity,
-        create
-      ],
+      bodyDataHas("deliverTo"),
+      bodyDataHas("mobileNumber"),
+      bodyDataHas("dishes"),
+      isDishesValid,
+      hasValidQuantity,
+      create
+    ],
     update: [ 
       orderExists, 
       hasValidId,
