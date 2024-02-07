@@ -82,50 +82,74 @@ function hasValidStatus(req, res, next){
     next();
 }
 
+function hasValidDeliverTo(req, res, next) {
+  const { data: { deliverTo } = {} } = req.body;
+  
+  if (!deliverTo) { // check if deliverTo is missing
+    return next({
+      status: 400,
+      message: "Order must include a deliverTo"
+    });
+  }
+}
+
+function hasMobileNumber(req, res, next) {
+  const { data: { mobileNumber } = {} } = req.body;
+  
+  if(!mobileNumber) {
+    return next({
+      status: 400,
+      message: "Order must include a mobileNumber"
+    });
+  }
+  next();
+}
+
+
 function read(req, res, next) {
   res.json({ data: res.locals.order });
 }
 
 function create(req, res, next) {
-    const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
-    
-    if (!deliverTo) { // check if deliverTo is missing
-      return next({
-        status: 400,
-        message: "Order must include a deliverTo"
-      });
+  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+  
+  if (!deliverTo) { // check if deliverTo is missing
+    return next({
+      status: 400,
+      message: "Order must include a deliverTo"
+    });
+  }
+  const newOrder = {
+    id: nextId(),
+    deliverTo,
+    mobileNumber,
+    status,
+    dishes
+  };
+  orders.push(newOrder);
+  res.status(201).json({ data: newOrder });
+}
+
+function update(req, res, next) {
+    const orderId = req.params.orderId;
+    const order = res.locals.order;
+
+    const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+    if (id && id !== orderId) {
+        return next({ 
+          status: 400, 
+          mesage: "Order id does not match route id"
+        });
     }
-    const newOrder = {
-      id: nextId(),
-      deliverTo,
-      mobileNumber,
-      status,
-      dishes
-    };
-    orders.push(newOrder);
-    res.status(201).json({ data: newOrder });
-  }
+  // update order
+  order.deliverTo = deliverTo;
+  order.mobileNumber = mobileNumber;
+  order.status = status;
+  order.dishes = dishes;
   
-  function update(req, res, next) {
-      const orderId = req.params.orderId;
-      const order = res.locals.order;
+  res.json({ data: order });
   
-      const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } = req.body;
-      if (id && id !== orderId) {
-          return next({ 
-            status: 400, 
-            mesage: "Order id does not match route id"
-          });
-      }
-    // update order
-    order.deliverTo = deliverTo;
-    order.mobileNumber = mobileNumber;
-    order.status = status;
-    order.dishes = dishes;
-    
-    res.json({ data: order });
-    
-  }
+}
 
 function destroy(req, res, next) {
     const orderId = req.params.orderId;
@@ -148,7 +172,8 @@ module.exports = {
     read: [orderExists, read],
     create: [
       isDishesValid,
-      hasValidId, 
+      hasValidId,
+      hasMobileNumber,
       create
     ],
     update: [ 
@@ -156,6 +181,7 @@ module.exports = {
       hasValidId,
       isDishesValid,
       hasValidStatus,
+      hasMobileNumber,
       update
     ],
     delete: [
